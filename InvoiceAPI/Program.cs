@@ -7,10 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-
-builder.Services.AddDbContext<InvoiceDbContext>(options =>
-    options.UseInMemoryDatabase("Invoice"));
-
 builder.Services.AddDbContext<InvoiceSqlDbContext>(options =>
     options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=YourDatabase;Trusted_Connection=True;"));
 

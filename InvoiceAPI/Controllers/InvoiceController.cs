@@ -10,13 +10,11 @@ namespace InvoiceAPI.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly ILogger<InvoiceController> _logger;
-        private readonly InvoiceDbContext _dbContext;
         private readonly InvoiceSqlDbContext _sqlDbContext;
 
-        public InvoiceController(ILogger<InvoiceController> logger, InvoiceDbContext dbContext, InvoiceSqlDbContext sqlDbContext)
+        public InvoiceController(ILogger<InvoiceController> logger, InvoiceSqlDbContext sqlDbContext)
         {
             _logger = logger;
-            _dbContext = dbContext;
             _sqlDbContext = sqlDbContext;
         }
 
@@ -25,11 +23,8 @@ namespace InvoiceAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<Invoice>> CreateInvoice(Invoice invoice)
         {
-            //_dbContext.Invoices.Add(invoice);
-            //await _dbContext.SaveChangesAsync();
-
             _sqlDbContext.Invoices.Add(invoice);
-            await _dbContext.SaveChangesAsync();    
+            await _sqlDbContext.SaveChangesAsync();    
 
             return CreatedAtAction(nameof(CreateInvoice), new { id = invoice.Uuid }, invoice);
         }
@@ -37,34 +32,36 @@ namespace InvoiceAPI.Controllers
         [HttpGet("Read/{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(Guid id)
         {
-            var invoice = await _dbContext.Invoices.FindAsync(id);
-        
+            var invoice = await _sqlDbContext.Invoices.FindAsync(id);   
+
             return invoice == null ? NotFound() : invoice;  
         }
 
         [HttpPut("Update/{id}")]
         public async Task<ActionResult<Invoice>> UpdateInvoice(Guid id, UpdateInvoice? invoice)
         {
-            var invoiceToUpdate = await _dbContext.Invoices.FirstOrDefaultAsync(e => e.Uuid == id);
+            var invoiceToUpdate = await _sqlDbContext.Invoices.FindAsync(id);
             
-            // Upravit -> Vytvorit aj svoje korektne spravy na vratenie uzivatelovi
 
             DataFiller.UpdateInvoice(ref invoiceToUpdate!, invoice);
-            _dbContext.SaveChanges();
+            _sqlDbContext.SaveChanges();
 
             return invoiceToUpdate;
         }
 
         [HttpDelete("Delete/{id}")]
-        public async void DeleteInvoice(Guid id)
+        public async Task<IActionResult> DeleteInvoice(Guid id)
         {
-            var invoiceToDelete = await _dbContext.Invoices.FirstOrDefaultAsync(e => e.Uuid == id);
+            var invoiceToDelete = await _sqlDbContext.Invoices.FindAsync(id);
             
             if(invoiceToDelete != null) 
             {
-                _dbContext.Invoices.Remove(invoiceToDelete);
-                _dbContext.SaveChanges();
+                _sqlDbContext.Invoices.Remove(invoiceToDelete);
+                _sqlDbContext.SaveChanges();
+                return NoContent();
             }
+
+            return NotFound();
         }
     }
 }
