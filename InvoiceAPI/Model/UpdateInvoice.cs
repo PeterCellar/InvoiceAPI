@@ -12,11 +12,13 @@ namespace InvoiceAPI.Model
 
         public string? SupplierFullName { get; set; }
 
-        public int? SupplierIco { get; set; }
+        [StringLength(9, MinimumLength = 8)]
+        public string? SupplierIco { get; set; }
 
         public string? PurchaserFullName { get; set; }
 
-        public int? PurchaserIco { get; set; }
+        [StringLength(9, MinimumLength = 8)]
+        public string? PurchaserIco { get; set; }
 
         public DateTime? IssueDate { get; set; }
 

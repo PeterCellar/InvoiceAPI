@@ -11,11 +11,13 @@ namespace InvoiceAPI.Controllers
     {
         private readonly ILogger<InvoiceController> _logger;
         private readonly InvoiceDbContext _dbContext;
+        private readonly InvoiceSqlDbContext _sqlDbContext;
 
-        public InvoiceController(ILogger<InvoiceController> logger, InvoiceDbContext dbContext)
+        public InvoiceController(ILogger<InvoiceController> logger, InvoiceDbContext dbContext, InvoiceSqlDbContext sqlDbContext)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _sqlDbContext = sqlDbContext;
         }
 
         
@@ -23,8 +25,11 @@ namespace InvoiceAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<Invoice>> CreateInvoice(Invoice invoice)
         {
-            _dbContext.Invoices.Add(invoice);
-            await _dbContext.SaveChangesAsync();
+            //_dbContext.Invoices.Add(invoice);
+            //await _dbContext.SaveChangesAsync();
+
+            _sqlDbContext.Invoices.Add(invoice);
+            await _dbContext.SaveChangesAsync();    
 
             return CreatedAtAction(nameof(CreateInvoice), new { id = invoice.Uuid }, invoice);
         }

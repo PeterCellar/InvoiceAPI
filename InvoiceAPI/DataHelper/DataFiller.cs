@@ -8,7 +8,7 @@ namespace InvoiceAPI.DataHelper
         {
             if(updateInvoice != null)
             {
-                if (updateInvoice.CreationDate != null) { invoice.CreationDate = updateInvoice.CreationDate; }
+                if (updateInvoice.CreationDate != null) { invoice.CreationDate = (DateTime)updateInvoice.CreationDate; }
                 
                 if (updateInvoice.UpdateDate != null) { invoice.UpdateDate = updateInvoice.UpdateDate; }
                 
@@ -16,15 +16,15 @@ namespace InvoiceAPI.DataHelper
                 
                 if (updateInvoice.SupplierFullName != null) { invoice.SupplierFullName = updateInvoice.SupplierFullName; }
                 
-                if (updateInvoice.SupplierIco != null) { invoice.SupplierIco = (int)updateInvoice.SupplierIco; }
+                if (updateInvoice.SupplierIco != null) { invoice.SupplierIco = updateInvoice.SupplierIco; }
                 
                 if (updateInvoice.PurchaserFullName != null) { invoice.PurchaserFullName = updateInvoice.PurchaserFullName; }
                
-                if (updateInvoice.PurchaserIco != null) { invoice.PurchaserIco = (int)updateInvoice.PurchaserIco; }
+                if (updateInvoice.PurchaserIco != null) { invoice.PurchaserIco = updateInvoice.PurchaserIco; }
                 
                 if (updateInvoice.IssueDate != null) { invoice.IssueDate = (DateTime)updateInvoice.IssueDate; }
                
-                if (updateInvoice.DueDate != null) { invoice.DueDate = updateInvoice.DueDate; }
+                if (updateInvoice.DueDate != null) { invoice.DueDate = (DateTime)updateInvoice.DueDate; }
                
                 if (updateInvoice.FulfillmentDate != null) { invoice.FulfillmentDate = updateInvoice.FulfillmentDate; }
               
