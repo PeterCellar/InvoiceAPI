@@ -2,6 +2,9 @@
 
 namespace InvoiceAPI.Model
 {
+    /// <summary>
+    /// Model representing Invoice entity.
+    /// </summary>
     public class Invoice
     {
         [Key]

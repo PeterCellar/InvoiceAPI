@@ -2,6 +2,9 @@
 
 namespace InvoiceAPI.Model
 {
+    /// <summary>
+    /// Model representing updatable Invoice entity.
+    /// </summary>
     public class UpdateInvoice
     {
         public DateTime? CreationDate { get; set; }

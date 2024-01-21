@@ -1,7 +1,6 @@
 using InvoiceAPI.DataHelper;
 using InvoiceAPI.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceAPI.Controllers
@@ -19,8 +18,11 @@ namespace InvoiceAPI.Controllers
             _sqlDbContext = sqlDbContext;
         }
 
-        
-
+        /// <summary>
+        /// Creation of new Invoice entity and saving to the database.
+        /// </summary>
+        /// <param name="invoice">The entity to create.</param>
+        /// <returns>Created (201) on success.</returns>
         [HttpPost("Create")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Invoice))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -52,6 +54,11 @@ namespace InvoiceAPI.Controllers
             return CreatedAtAction(nameof(CreateInvoice), new { id = invoice.Uuid}, invoice);
         }
 
+        /// <summary>
+        /// Retrieval of existing Invoice entity identified by UUID from database.
+        /// </summary>
+        /// <param name="id">UUID of the entity to retrieve.</param>
+        /// <returns>OK (200) on success.</returns>
         [HttpGet("Read/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Invoice))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,7 +68,12 @@ namespace InvoiceAPI.Controllers
             return invoice == null ? NotFound() : Ok(invoice);  
         }
 
-
+        /// <summary>
+        /// Update of existing Invoice entity identified by UUID in database. 
+        /// </summary>
+        /// <param name="id">UUID of the entity to update.</param>
+        /// <param name="invoice">The entity with updatable data.</param>
+        /// <returns>No Content(204) on success.</returns>
         [HttpPut("Update/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -97,6 +109,11 @@ namespace InvoiceAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletion of the Invoice entity identified by UUID from database.
+        /// </summary>
+        /// <param name="id">UUID of the entity to delete.</param>
+        /// <returns>No Content(204) on success.</returns>
         [HttpDelete("Delete/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
