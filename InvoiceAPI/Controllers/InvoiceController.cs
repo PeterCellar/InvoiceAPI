@@ -1,3 +1,4 @@
+using InvoiceAPI.DataHelper;
 using InvoiceAPI.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,22 +38,28 @@ namespace InvoiceAPI.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult<Invoice>> UpdateInvoice(Guid Id, Invoice invoice)
+        public async Task<ActionResult<Invoice>> UpdateInvoice(Guid id, UpdateInvoice? invoice)
         {
-            var invoiceToUpdate = await _dbContext.Invoices.FirstOrDefaultAsync(e => e.Uuid == Id);
+            var invoiceToUpdate = await _dbContext.Invoices.FirstOrDefaultAsync(e => e.Uuid == id);
             
             // Upravit -> Vytvorit aj svoje korektne spravy na vratenie uzivatelovi
-            if(invoiceToUpdate == null) { return NotFound(); }
 
-            // Zavolat metodu z DataHelperu na updatovanie dat
+            DataFiller.UpdateInvoice(ref invoiceToUpdate!, invoice);
+            _dbContext.SaveChanges();
 
             return invoiceToUpdate;
         }
 
         [HttpDelete("Delete/{id}")]
-        public void DeleteInvoice(Guid id)
+        public async void DeleteInvoice(Guid id)
         {
-
+            var invoiceToDelete = await _dbContext.Invoices.FirstOrDefaultAsync(e => e.Uuid == id);
+            
+            if(invoiceToDelete != null) 
+            {
+                _dbContext.Invoices.Remove(invoiceToDelete);
+                _dbContext.SaveChanges();
+            }
         }
     }
 }
