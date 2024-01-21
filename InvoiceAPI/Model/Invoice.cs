@@ -8,21 +8,21 @@ namespace InvoiceAPI.Model
         public Guid Uuid { get; set; }
 
         [Required]
-        [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}")]
-        public DateTime CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         public DateTime? UpdateDate { get; set; }
 
         [Required]
         public double Ammount { get; set; }
 
+        [StringLength (50)]
         public string? SupplierFullName { get; set; }
 
         [Required]
-        [StringLength(9, MinimumLength = 8)]
+        [StringLength (9, MinimumLength = 8)]
         public string? SupplierIco { get; set; }
 
+        [StringLength (50)]
         public string? PurchaserFullName { get; set; }
 
         [Required]
@@ -30,10 +30,10 @@ namespace InvoiceAPI.Model
         public string? PurchaserIco { get; set; }
 
         [Required]
-        public DateTime IssueDate { get; set; }
+        public DateTime? IssueDate { get; set; }
 
         [Required]
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
 
         public DateTime? FulfillmentDate { get; set; }
 

@@ -10,11 +10,13 @@ namespace InvoiceAPI.Model
 
         public double? Ammount { get; set; }
 
+        [StringLength(50)]
         public string? SupplierFullName { get; set; }
 
         [StringLength(9, MinimumLength = 8)]
         public string? SupplierIco { get; set; }
 
+        [StringLength(50)]
         public string? PurchaserFullName { get; set; }
 
         [StringLength(9, MinimumLength = 8)]

@@ -23,6 +23,11 @@ namespace InvoiceAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<Invoice>> CreateInvoice(Invoice invoice)
         {
+            var existingInvoice = _sqlDbContext.Invoices.FindAsync(invoice.Uuid);
+            if(existingInvoice.Result != null) { throw new DbUpdateException(); } 
+
+            DataOperations.ValidateData(invoice);
+
             _sqlDbContext.Invoices.Add(invoice);
             await _sqlDbContext.SaveChangesAsync();    
 
@@ -43,7 +48,7 @@ namespace InvoiceAPI.Controllers
             var invoiceToUpdate = await _sqlDbContext.Invoices.FindAsync(id);
             
 
-            DataFiller.UpdateInvoice(ref invoiceToUpdate!, invoice);
+            DataOperations.UpdateInvoice(ref invoiceToUpdate!, invoice);
             _sqlDbContext.SaveChanges();
 
             return invoiceToUpdate;

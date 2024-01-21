@@ -12,11 +12,7 @@ builder.Services.AddDbContext<InvoiceSqlDbContext>(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(o =>
-{
-    // My schema filter to format DateTime properties
-    o.SchemaFilter<DateTimeSchemaFilter>();
-});
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
