@@ -69,6 +69,20 @@ namespace InvoiceAPI.DataHelper
         public static bool ValidateIco(string ico)
         {
             return int.TryParse(ico, out var i);
-        } 
+        }
+
+        /// <summary>
+        /// Counter of non-null values in object instance.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns>Number of non-null values.</returns>
+        public static int CountNonNullValues<T>(T obj)
+        {
+            return typeof(T)
+                .GetProperties()
+                .Select(property => property.GetValue(obj))
+                .Count(value => value != null);
+        }
     }
 }

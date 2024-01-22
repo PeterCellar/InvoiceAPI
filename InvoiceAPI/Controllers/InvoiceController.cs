@@ -33,25 +33,30 @@ namespace InvoiceAPI.Controllers
             try
             {
                 DataOperations.ValidateInvoiceModel(invoice);
+                _logger.LogInformation("Model {ModelType} with UUID {Uuid} has valid data.", typeof(Invoice), invoice.Uuid);
 
                 _sqlDbContext.Invoices.Add(invoice);
                 await _sqlDbContext.SaveChangesAsync();
+                _logger.LogInformation("Invoice entity with UUID {Uuid} was successfully saved in database.", invoice.Uuid);
+
+                return CreatedAtAction(nameof(CreateInvoice), new { id = invoice.Uuid }, invoice);
 
             }
-            catch(DbUpdateException)
+            catch (DbUpdateException)
             {
-                return Conflict($"Duplicate key or unique constraint violation.\nInvoice with {invoice.Uuid} already exists.");
+                _logger.LogError("Duplicate key or unique constraint violation. Invoice entity with {Uuid} already exists.", invoice.Uuid);
+                return Conflict($"Duplicate key or unique constraint violation. Invoice entity with {invoice.Uuid} already exists.");
             }
-            catch(InvalidDataException ex)
+            catch (InvalidDataException ex)
             {
-                return BadRequest("Invalid invoice data.\n" + ex.Message);
+                _logger.LogError("Model {ModelType} with UUID {Uuid} has invalid data.\n{ErrorMessage}", typeof(Invoice), invoice.Uuid, ex.Message);
+                return BadRequest($"Model {typeof(Invoice)} with UUID {invoice.Uuid} has invalid data.\n{ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error\n" + ex.Message);
+                _logger.LogError("Internal server error occured while processing Invoice entity with UUID {Uuid}.\n{ErrorMessage}", invoice.Uuid, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error occured while processing Invoice entity with UUID {invoice.Uuid}.\n{ex.Message}");
             }
-
-            return CreatedAtAction(nameof(CreateInvoice), new { id = invoice.Uuid}, invoice);
         }
 
         /// <summary>
@@ -65,7 +70,14 @@ namespace InvoiceAPI.Controllers
         public async Task<ActionResult<Invoice>> GetInvoice(Guid id)
         {
             var invoice = await _sqlDbContext.Invoices.FindAsync(id);   
-            return invoice == null ? NotFound() : Ok(invoice);  
+            if(invoice != null)
+            {
+                _logger.LogInformation("Found Invoice entity with UUID {Uuid}.", invoice.Uuid);
+                return Ok(invoice);
+            }
+
+            _logger.LogWarning("Invoice entity with UUID {Uuid} was not found.", id);
+            return NotFound();  
         }
 
         /// <summary>
@@ -83,30 +95,45 @@ namespace InvoiceAPI.Controllers
         public async Task<ActionResult<Invoice>> UpdateInvoice(Guid id, UpdateInvoice? invoice)
         {
             var invoiceToUpdate = await _sqlDbContext.Invoices.FindAsync(id);
-            if (invoiceToUpdate == null) { return  NotFound(); }
+            if (invoiceToUpdate == null) 
+            {
+                _logger.LogWarning("Invoice entity to update with UUID {Uuid} was not found.", id);
+                return  NotFound(); 
+            }
 
-            if (invoice == null) { return NoContent(); }
+            if (invoice == null || DataOperations.CountNonNullValues(invoice) == 0 ) 
+            {
+                _logger.LogWarning("There are no updating data prepared on model {ModelType}.", typeof(UpdateInvoice));
+                return NoContent(); 
+            }
 
             try
             {
+
                 DataOperations.ValidateUpdateInvoiceModel(invoice);
+                _logger.LogInformation("Model {ModelType} has valid data.", typeof(UpdateInvoice));
+
                 DataOperations.UpdateInvoice(ref invoiceToUpdate!, invoice);
                 _sqlDbContext.SaveChanges();
+                _logger.LogInformation("Invoice entity with UUID {Uuid} was successfully updated in database.", invoiceToUpdate.Uuid);
+                
+                return NoContent();
             }
             catch(DbUpdateException)
             {
+                _logger.LogError("Duplicate key or unique constraint violation.\nInvoice with UUID {Uuid} already exists.", invoiceToUpdate.Uuid);
                 return Conflict($"Duplicate key or unique constraint violation.\nInvoice with {invoiceToUpdate.Uuid} already exists.");
             }
             catch(InvalidDataException ex)
             {
-                return BadRequest("Invalid invoice data.\n" + ex.Message);
+                _logger.LogError("Model {ModelType} has invalid data.\n{ErrorMessage}", typeof(UpdateInvoice), ex.Message);
+                return BadRequest($"Model {typeof(UpdateInvoice)} has invalid data.\n{ex.Message}");
             }
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error\n" + ex.Message);
+                _logger.LogError("Internal server error occured while updating Invoice entity with UUID {Uuid}.\n{ErrorMessage}", invoiceToUpdate.Uuid, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error occured while updating Invoice entity with UUID {invoiceToUpdate.Uuid}\n{ex.Message}");
             }
-
-            return NoContent();
         }
 
         /// <summary>
@@ -121,18 +148,24 @@ namespace InvoiceAPI.Controllers
         public async Task<IActionResult> DeleteInvoice(Guid id)
         {
             var invoiceToDelete = await _sqlDbContext.Invoices.FindAsync(id);
-            if(invoiceToDelete == null) { return NotFound(); }
+            if(invoiceToDelete == null) 
+            {
+                _logger.LogWarning("Invoice entity to delete with UUID {Uuid} was not found.", id);
+                return NotFound(); 
+            }
 
             try
             {
                 _sqlDbContext.Invoices.Remove(invoiceToDelete);
                 _sqlDbContext.SaveChanges();
+                _logger.LogInformation("Invoice entity with UUID {Uuid} was successfully deleted from database.", id);
 
                 return NoContent();
             }
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error\n" + ex.Message);
+                _logger.LogError("Internal server error occured while deleting Invoice entity with UUID {id}.\n{ErrorMessage}.", id, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error occured while deleting Invoice entity with UUID {id}.\n{ex.Message}.");
             }
         }
     }
