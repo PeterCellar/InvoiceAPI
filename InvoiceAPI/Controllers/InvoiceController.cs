@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 namespace InvoiceAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class InvoiceController : ControllerBase
+    [Route("api/v1/[controller]")]
+    public class InvoicesController : ControllerBase
     {
-        private readonly ILogger<InvoiceController> _logger;
+        private readonly ILogger<InvoicesController> _logger;
         private readonly InvoiceSqlDbContext _sqlDbContext;
 
-        public InvoiceController(ILogger<InvoiceController> logger, InvoiceSqlDbContext sqlDbContext)
+        public InvoicesController(ILogger<InvoicesController> logger, InvoiceSqlDbContext sqlDbContext)
         {
             _logger = logger;
             _sqlDbContext = sqlDbContext;
@@ -23,7 +23,7 @@ namespace InvoiceAPI.Controllers
         /// </summary>
         /// <param name="invoice">The entity to create.</param>
         /// <returns>Created (201) on success.</returns>
-        [HttpPost("Create")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Invoice))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -64,7 +64,7 @@ namespace InvoiceAPI.Controllers
         /// </summary>
         /// <param name="id">UUID of the entity to retrieve.</param>
         /// <returns>OK (200) on success.</returns>
-        [HttpGet("Read/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Invoice))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Invoice>> GetInvoice(Guid id)
@@ -86,7 +86,7 @@ namespace InvoiceAPI.Controllers
         /// <param name="id">UUID of the entity to update.</param>
         /// <param name="invoice">The entity with updatable data.</param>
         /// <returns>No Content(204) on success.</returns>
-        [HttpPut("Update/{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -141,7 +141,7 @@ namespace InvoiceAPI.Controllers
         /// </summary>
         /// <param name="id">UUID of the entity to delete.</param>
         /// <returns>No Content(204) on success.</returns>
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
